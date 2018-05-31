@@ -369,7 +369,7 @@ function autolink_submit_form_insert_l() {
     global $wpdb;
     $start_time = date(time());
     $log=true;
-    $link_pre="https://swiftbook.ru/content/";
+    $link_pre=site_url()."/content/";
     $count=0;
     $list[0]=[
 
