@@ -286,7 +286,7 @@ function primer_options_page_output(){
 /*------------------------------------------------------------------------------------------------------------------------------------*/
 // Обработчики по AJAX
 /*------------------------------------------------------------------------------------------------------------------------------------*/
-add_action( 'wp_ajax_Autolink_Start', 'Autolink_Start' );
+//add_action( 'wp_ajax_Autolink_Start', 'Autolink_Start' );
 function Autolink_Start() {
    global $wpdb;
    $log=true;
@@ -317,8 +317,6 @@ function autolink_submit_form_dell_m() {
         if($log) {echo "posts:".$_posts."\n";};
     foreach($_posts as $dp)
     {  if($log) {echo "ID:".$dp->ID."\n";};
-       
-  
        $result= $wpdb->get_results("call  clean_pagination('%s','%s');" ,$dp->ID  ,parce_clear_empty_pre( parce_clear_mistape($dp->post_content)));
        if($log) {echo "result:".$result."\n";};
         $count=$count+1;
@@ -338,7 +336,7 @@ function autolink_submit_form_dell_l() {
     $_posts =   $wpdb->get_results('SELECT * FROM `get_docs`;');
     foreach($_posts as $dp)
     {
-        $wpdb->query("call  clean_pagination('%s','%s');" ,$dp->ID  , parce_clear_pagin_next( $dp->post_content));
+        $wpdb->get_results("call  clean_pagination('%s','%s');" ,$dp->ID  , parce_clear_pagin_next( $dp->post_content));
         $count=$count+1;
         
     }
@@ -356,7 +354,7 @@ function autolink_submit_form_insert_m() {
     $_posts =   $wpdb->get_results('SELECT * FROM `get_post_doc`;');
     foreach($_posts as $dp)
     {
-        $wpdb->query("call  insert_mistape('%s');" ,$dp->ID );
+        $wpdb->get_results("call  insert_mistape('%s');" ,$dp->ID );
         $count=$count+1;
         
     }
@@ -370,7 +368,7 @@ add_action( 'wp_ajax_autolink_submit_form_insert_l', 'autolink_submit_form_inser
 function autolink_submit_form_insert_l() {
     global $wpdb;
     $start_time = date(time());
-    
+    $log=true;
     $link_pre="https://swiftbook.ru/content/";
     $count=0;
     $list[0]=[
@@ -383,18 +381,19 @@ function autolink_submit_form_insert_l() {
     ];
     
     $_posts =   $wpdb->get_results('SELECT * FROM `get_post_0_lvl` group by ID;');
-
+    if($log) {echo "result:".$_posts."\n";};
     foreach($_posts as $dp)
     {
         
 
-
+        if($log) {echo "post_name:". $dp->post_name."\n";};
+        
         $list[$count]["link"]=$link_pre . $dp->post_name;
         $list[$count]["num"]=$dp->ID;
         $list[$count]["caption"]=$dp->post_title;
         $list[$count]["parts"]=$dp->term_taxonomy_id;
         $parent=$dp->post_name;
-
+        if($log) {echo "list[count][link]:". $list[$count]["link"]."\n";};
  
  
         
@@ -406,6 +405,7 @@ function autolink_submit_form_insert_l() {
         {
            
             $list[$count]["link"]=$link_pre . $parent. '/' . $cp->post_name;
+            if($log) {echo " get_post_n_lvl link:".$list[$count]["link"]."\n";};
             $list[$count]["num"]=$cp->ID;
             $list[$count]["caption"]=$cp->post_title;
             $list[$count]["parts"]=$dp->term_taxonomy_id;
@@ -418,8 +418,7 @@ function autolink_submit_form_insert_l() {
     
     for ($i=1; $i< $count-2; $i++){
 
-     //   message('<'.$list[$i-1]["caption"]. '['.$list[$i]["num"].']'.$list[$i+1]["caption"] . '>' . $list[$i]["parts"]);
-
+  
 
       if ( $list[$i]["parts"]!=$list[$i+1]["parts"]) {
 
@@ -431,13 +430,13 @@ function autolink_submit_form_insert_l() {
       } else
           if ($list[$i]["parts"]!=$list[$i-1]["parts"]) {
 
-             $wpdb->get_results(" call `new.swiftbook`.insert_link_to_article('%s','%s','%s','%s','%s','%s','%s');" ,$list[$i]["num"]
+             $wpdb->get_results(" call insert_link_to_article('%s','%s','%s','%s','%s','%s','%s');" ,$list[$i]["num"]
                   ,'#',0,' '
                   ,$list[$i+1]["link"],$list[$i+1]["num"],$list[$i+1]["caption"]);
 
           } else {
 
-              $wpdb->get_results(" call `new.swiftbook`.insert_link_to_article('%s','%s','%s','%s','%s','%s','%s');" ,$list[$i]["num"]
+              $wpdb->get_results(" call insert_link_to_article('%s','%s','%s','%s','%s','%s','%s');" ,$list[$i]["num"]
                   ,$list[$i-1]["link"],$list[$i-1]["num"],$list[$i-1]["caption"]
                   ,$list[$i+1]["link"],$list[$i+1]["num"],$list[$i+1]["caption"]);
 
@@ -468,6 +467,7 @@ function parce_clear_mistape($s)
 {
 
     $pattern = '/<div class="mistape_caption"><p>Если вы нашли ошибку, пожалуйста, выделите фрагмент текста и нажмите <em>Ctrl\+Enter<\/em>\.<\/p><\/div>/i';
+    //TODO -- modernisation regexp
     $replacement = '';
     $s= preg_replace($pattern, $replacement, $s);
     return $s;
