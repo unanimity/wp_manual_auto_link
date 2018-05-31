@@ -312,15 +312,15 @@ function autolink_submit_form_dell_m() {
     global $wpdb;
     $start_time = date(time());
     $count=0;
-    $log=true;
+    $log=true; 
     $_posts =   $wpdb->get_results('SELECT * FROM `getMDoc`;');
         if($log) {echo "posts:".$_posts."\n";};
     foreach($_posts as $dp)
     {  if($log) {echo "ID:".$dp->ID."\n";};
-       $result= $wpdb->get_results("call  clean_pagination('%s','%s');" ,$dp->ID  ,parce_clear_empty_pre( parce_clear_mistape($dp->post_content)));
-       if($log) {echo "result:".$result."\n";};
+       $result= $wpdb->get_results(	$wpdb->prepare( "call  clean_pagination(%s,%s);" ,$dp->ID  ,parce_clear_empty_pre( parce_clear_mistape($dp->post_content)) ));
+       if($log) {echo "result:".$result.";\n";};
         $count=$count+1;
-     
+     $wpdb->print_error();
     }
    
    echo 'Deleted '.$count.' mistape;'."\n".'Time: '.gmdate("H:i:s", date(time())-$start_time).";\n";
@@ -333,10 +333,14 @@ function autolink_submit_form_dell_l() {
     global $wpdb;
     $start_time = date(time());
     $count=0;
-    $_posts =   $wpdb->get_results('SELECT * FROM `get_docs`;');
+     $log=true; 
+ //   $_posts =   $wpdb->get_results('SELECT * FROM `get_docs`;');
+     $_posts= $wpdb->get_results(	$wpdb->prepare("call  get_docs();"  ));
+     if($log) {echo "posts:".$_posts."\n";};
     foreach($_posts as $dp)
     {
-        $wpdb->get_results("call  clean_pagination('%s','%s');" ,$dp->ID  , parce_clear_pagin_next( $dp->post_content));
+        $result= $wpdb->get_results(	$wpdb->prepare("call  clean_pagination('%s','%s');" ,$dp->ID  , parce_clear_pagin_next( $dp->post_content) ));
+         if($log) {echo "result:".$result."\n";};
         $count=$count+1;
         
     }
@@ -354,7 +358,7 @@ function autolink_submit_form_insert_m() {
     $_posts =   $wpdb->get_results('SELECT * FROM `get_post_doc`;');
     foreach($_posts as $dp)
     {
-        $wpdb->get_results("call  insert_mistape('%s');" ,$dp->ID );
+        $result= $wpdb->get_results(	$wpdb->prepare("call  insert_mistape('%s');" ,$dp->ID ));
         $count=$count+1;
         
     }
