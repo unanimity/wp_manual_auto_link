@@ -289,18 +289,19 @@ function primer_options_page_output(){
 add_action( 'wp_ajax_Autolink_Start', 'Autolink_Start' );
 function Autolink_Start() {
    global $wpdb;
+   $log=true;
    $count=0;
    $_posts =   $wpdb->get_results('SELECT * FROM wp_users;');
-    
+    if($log) {echo "posts:".$_posts."\n";};
     foreach($_posts as $dp)
     {
          
 
      //   $wc->query("call `new.swiftbook`.clean_pagination('%s','%s');" ,$dp["ID"]  , parce_clear_pagin_next($dp["post_content"]) );
 
-        $count=$count+1;
+       $count=$count+1;
        echo $dp->ID."\n";
-
+       if($log) {echo "ID:".$dp->ID."\n";};
     }     
         echo  $count;
 	wp_die();
@@ -311,12 +312,17 @@ function autolink_submit_form_dell_m() {
     global $wpdb;
     $start_time = date(time());
     $count=0;
+    $log=true;
     $_posts =   $wpdb->get_results('SELECT * FROM `getMDoc`;');
+        if($log) {echo "posts:".$_posts."\n";};
     foreach($_posts as $dp)
-    {
-        $wpdb->query("call  clean_pagination('%s','%s');" ,$dp->ID  ,parce_clear_empty_pre( parce_clear_mistape($dp->post_content)));
+    {  if($log) {echo "ID:".$dp->ID."\n";};
+       
+  
+       $result= $wpdb->get_results("call  clean_pagination('%s','%s');" ,$dp->ID  ,parce_clear_empty_pre( parce_clear_mistape($dp->post_content)));
+       if($log) {echo "result:".$result."\n";};
         $count=$count+1;
-        
+     
     }
    
    echo 'Deleted '.$count.' mistape;'."\n".'Time: '.gmdate("H:i:s", date(time())-$start_time).";\n";
