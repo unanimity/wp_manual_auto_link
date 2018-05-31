@@ -312,7 +312,7 @@ function autolink_submit_form_dell_m() {
     global $wpdb;
     $start_time = date(time());
     $count=0;
-    $log=true; 
+    $log=false; 
     $_posts =   $wpdb->get_results('SELECT * FROM `getMDoc`;');
         if($log) {echo "posts:".$_posts."\n";};
     foreach($_posts as $dp)
@@ -333,7 +333,7 @@ function autolink_submit_form_dell_l() {
     global $wpdb;
     $start_time = date(time());
     $count=0;
-     $log=true; 
+     $log=false; 
  //   $_posts =   $wpdb->get_results('SELECT * FROM `get_docs`;');
      $_posts= $wpdb->get_results(	$wpdb->prepare("call  get_docs();"  ));
      if($log) {echo "posts:".$_posts."\n";};
@@ -372,7 +372,7 @@ add_action( 'wp_ajax_autolink_submit_form_insert_l', 'autolink_submit_form_inser
 function autolink_submit_form_insert_l() {
     global $wpdb;
     $start_time = date(time());
-    $log=true;
+    $log=false;
     $link_pre=site_url()."/content/";
     $count=0;
     $list[0]=[
@@ -401,7 +401,7 @@ function autolink_submit_form_insert_l() {
  
  
         
-        $result=$wpdb->get_results("call `new.swiftbook`.get_post_n_lvl('%s');", $dp->ID);
+        $result= $wpdb->get_results(	$wpdb->prepare("call get_post_n_lvl('%s');", $dp->ID));
 
         $count=$count+1;
 
@@ -426,23 +426,23 @@ function autolink_submit_form_insert_l() {
 
       if ( $list[$i]["parts"]!=$list[$i+1]["parts"]) {
 
-          $wpdb->get_results(" call insert_link_to_article('%s','%s','%s','%s','%s','%s','%s');" ,$list[$i]["num"]
+          $result= $wpdb->get_results(	$wpdb->prepare(" call insert_link_to_article('%s','%s','%s','%s','%s','%s','%s');" ,$list[$i]["num"]
               ,$list[$i-1]["link"],$list[$i-1]["num"],$list[$i-1]["caption"]
-              ,'#',0,' ');
+              ,'#',0,' '));
 
 
       } else
           if ($list[$i]["parts"]!=$list[$i-1]["parts"]) {
 
-             $wpdb->get_results(" call insert_link_to_article('%s','%s','%s','%s','%s','%s','%s');" ,$list[$i]["num"]
+             $result= $wpdb->get_results(	$wpdb->prepare(" call insert_link_to_article('%s','%s','%s','%s','%s','%s','%s');" ,$list[$i]["num"]
                   ,'#',0,' '
-                  ,$list[$i+1]["link"],$list[$i+1]["num"],$list[$i+1]["caption"]);
+                  ,$list[$i+1]["link"],$list[$i+1]["num"],$list[$i+1]["caption"]));
 
           } else {
 
-              $wpdb->get_results(" call insert_link_to_article('%s','%s','%s','%s','%s','%s','%s');" ,$list[$i]["num"]
+              $result= $wpdb->get_results(	$wpdb->prepare(" call insert_link_to_article('%s','%s','%s','%s','%s','%s','%s');" ,$list[$i]["num"]
                   ,$list[$i-1]["link"],$list[$i-1]["num"],$list[$i-1]["caption"]
-                  ,$list[$i+1]["link"],$list[$i+1]["num"],$list[$i+1]["caption"]);
+                  ,$list[$i+1]["link"],$list[$i+1]["num"],$list[$i+1]["caption"]));
 
           }
 
